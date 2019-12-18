@@ -30,7 +30,7 @@ class Dog(models.Model):
     )
 
     name = models.CharField(max_length=48, unique=True)
-    image_filename = models.CharField(unique=True)
+    image_filename = models.CharField(max_length=256, unique=True)
     breed = models.CharField(max_length=48)
     age = models.IntegerField()
     gender = models.CharField(max_length=1, choices=GENDER)
