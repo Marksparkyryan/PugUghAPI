@@ -37,3 +37,23 @@ class Dog(models.Model):
     size = models.CharField(max_length=2, choices=SIZE)
 
 
+class UserDog(models.Model):
+    """Model representing the relationship (liked or disliked) between 
+    each user and each dog
+    
+    Attributes:
+        user {ForeignKey} -- Many to one relationship to a user
+        dog {ForeignKey} -- Many to one relationship to a dog
+        status {string} -- one character [(l)iked, (d)isliked] 
+        representing how a user feels about a dog
+    """
+    FEELINGS = (
+        ('l', 'liked'),
+        ('d', 'disliked')
+    )
+    user = models.ForeignKey(User, on_delete=CASCADE)
+    dog = models.ForeignKey(Dog, on_delete=CASCADE)
+    status = models.CharField(max_length=1, choices=FEELINGS)
+
+
+
