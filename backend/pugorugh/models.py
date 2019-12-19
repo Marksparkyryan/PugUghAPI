@@ -31,10 +31,13 @@ class Dog(models.Model):
 
     name = models.CharField(max_length=48, unique=True)
     image_filename = models.CharField(max_length=256, unique=True)
-    breed = models.CharField(max_length=48)
+    breed = models.CharField(default='unknown', max_length=48)
     age = models.IntegerField()
     gender = models.CharField(max_length=1, choices=GENDER)
-    size = models.CharField(max_length=2, choices=SIZE)
+    size = models.CharField(default="unknown", max_length=2, choices=SIZE)
+
+    def __str__(self):
+        return self.name
 
 
 class UserDog(models.Model):

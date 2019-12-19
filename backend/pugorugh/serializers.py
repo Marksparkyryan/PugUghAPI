@@ -27,6 +27,7 @@ class DogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dog
         fields = [
+            'id',
             'name',
             'image_filename',
             'breed',
