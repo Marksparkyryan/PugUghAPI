@@ -1,13 +1,14 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import Http404
+from django.shortcuts import Http404, get_object_or_404
 
 from rest_framework import permissions
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView)
+from rest_framework.response import Response
 
 from . import serializers
-from .models import Dog
-from .serializers import DogSerializer
+from .models import Dog, UserDog
+from .serializers import DogSerializer, UserDogSerializer
 
 
 class UserRegisterView(CreateAPIView):
@@ -22,7 +23,7 @@ class DogRetrieveView(RetrieveAPIView):
     """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
         status = self.kwargs.get('status')[0]
@@ -44,4 +45,33 @@ class DogRetrieveView(RetrieveAPIView):
         )
         if next_dogs.exists():
             return next_dogs.first()
+        if status_dogs.exists():
+            return status_dogs.first()
         raise Http404()
+
+
+class DogLikedDislikedUpdateView(UpdateAPIView):
+    """API endpoint handling GET requests for dogs liked, disliked, or
+    undecided by user
+    """
+    queryset = Dog.objects.all()
+    serializer_class = DogSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def update(self, request, *args, **kwargs):
+        status = self.kwargs.get('status')[0]
+        existing, created = UserDog.objects.get_or_create(
+            user=self.request.user,
+            dog=self.get_object(),
+        )
+        instance = existing or created
+        serializer = UserDogSerializer(
+            instance=instance,
+            data={
+                'user': self.request.user.id,
+                'dog': self.get_object().id,
+                'status': status
+            })
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
-from .models import Dog, UserPref
+from .models import Dog, UserPref, UserDog
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -34,6 +34,19 @@ class DogSerializer(serializers.ModelSerializer):
             'age',
             'gender',
             'size',
+        ]
+
+
+class UserDogSerializer(serializers.ModelSerializer):
+    """Serailizer that encodes and decodes each field of the UserDog
+    model
+    """
+    class Meta:
+        model = UserDog
+        fields = [
+            'user',
+            'dog',
+            'status',
         ]
 
 
