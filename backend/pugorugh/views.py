@@ -24,7 +24,7 @@ class DogRetrieveView(RetrieveAPIView):
     """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
         feeling = self.kwargs.get('feeling')[0]
@@ -61,7 +61,7 @@ class UserDogStatusUpdateView(UpdateAPIView):
     """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def update(self, request, *args, **kwargs):
         feeling = self.kwargs.get('feeling')[0]
@@ -96,22 +96,13 @@ class UserDogStatusUpdateView(UpdateAPIView):
 class UserPrefUpdateView(RetrieveUpdateAPIView):
     queryset = UserPref.objects.all()
     serializer_class = UserPrefSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
         userpref = self.get_queryset().filter(
             user=self.request.user
         ).first()
         return userpref 
-    
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = UserPrefSerializer(
-            instance=instance,
-            data=request.data
-        )
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+
 
 
