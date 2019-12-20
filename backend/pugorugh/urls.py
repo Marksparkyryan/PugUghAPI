@@ -5,17 +5,17 @@ from django.views.generic.base import RedirectView
 from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework.authtoken.views import obtain_auth_token
 
-from pugorugh.views import UserRegisterView, DogRetrieveView, DogLikedDislikedUpdateView
+from pugorugh.views import UserRegisterView, DogRetrieveView, UserDogStatusUpdateView
 
 # API endpoints
 urlpatterns = format_suffix_patterns([
     url(r'^api/user/login/$', obtain_auth_token, name='login-user'),
     url(r'^api/user/$', UserRegisterView.as_view(), name='register-user'),
-    url(r'^api/dog/(?P<pk>-?\d+)/(?P<status>(\bliked|\bdisliked|\bundecided))/next/$', 
+    url(r'^api/dog/(?P<pk>-?\d+)/(?P<feeling>(\bliked|\bdisliked|\bundecided))/next/$', 
         DogRetrieveView.as_view(), 
-        name='liked-dog'),
-    url(r'^api/dog/(?P<pk>\d+)/(?P<status>(\bliked|\bdisliked|\bundecided))/$',
-        DogLikedDislikedUpdateView.as_view(),
+        name='next-dog'),
+    url(r'^api/dog/(?P<pk>\d+)/(?P<feeling>(\bliked|\bdisliked|\bundecided))/$',
+        UserDogStatusUpdateView.as_view(),
         name='userdog-update'),
     url(r'^favicon\.ico$',
         RedirectView.as_view(
