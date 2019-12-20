@@ -34,7 +34,11 @@ class DogRetrieveView(RetrieveAPIView):
                 userdog__user_id=self.request.user.id,
             ).order_by('pk')
         elif feeling == 'u':
-            feeling_dogs = self.queryset.exclude(
+            feeling_dogs = self.queryset.filter(
+                age_letter__in=self.request.user.prefs.age,
+                gender__in=self.request.user.prefs.gender,
+                size__in=self.request.user.prefs.size
+            ).exclude(
                 userdog__user_id=self.request.user.id
             ).order_by('pk')
         return feeling_dogs

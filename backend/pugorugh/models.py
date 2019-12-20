@@ -1,6 +1,8 @@
+
+
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 
 
@@ -34,12 +36,26 @@ class Dog(models.Model):
     name = models.CharField(max_length=48, unique=True)
     image_filename = models.CharField(max_length=256, unique=True)
     breed = models.CharField(default='unknown', max_length=48)
+    age_letter = models.CharField(max_length=1, null=True)
     age = models.IntegerField()
     gender = models.CharField(max_length=48, choices=GENDER)
     size = models.CharField(default="unknown", max_length=48, choices=SIZE)
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        "Returns letter category of Dog's age"
+        if self.age > 84:
+            self.age_letter = 's'
+        elif self.age > 18:
+            self.age_letter = 'a'
+        elif self.age > 8:
+            self.age_letter = 'y'
+        else:
+            self.age_letter = 'b'
+        super(Dog, self).save(*args, **kwargs)
+
 
 
 class UserDog(models.Model):
@@ -77,7 +93,7 @@ class UserPref(models.Model):
         [(s)mall, (m)edium, (l)arge, (xl) extra large] representing
         preferred size of dog
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='prefs')
     age = models.CharField(max_length=7, default='b,y,a,s')
     gender = models.CharField(max_length=3, default='m,f')
     size = models.CharField(max_length=8, default='s,m,l,xl')
