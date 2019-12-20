@@ -4,8 +4,11 @@ from django.core.urlresolvers import reverse
 
 from rest_framework import permissions, status
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
-                                     UpdateAPIView, RetrieveUpdateAPIView)
+                                     UpdateAPIView, RetrieveUpdateAPIView,
+                                     ListCreateAPIView, DestroyAPIView)
+from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
+from rest_framework.viewsets import GenericViewSet
 
 from . import serializers
 from .models import Dog, UserDog, UserPref
@@ -16,6 +19,18 @@ class UserRegisterView(CreateAPIView):
     permission_classes = (permissions.AllowAny,)
     model = get_user_model()
     serializer_class = serializers.UserSerializer
+
+
+class DogListCreateView(ListCreateAPIView):
+    queryset = Dog.objects.all()
+    serializer_class = DogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class DogDeleteView(DestroyAPIView):
+    queryset = Dog.objects.all()
+    serializer_class = DogSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class DogRetrieveView(RetrieveAPIView):
@@ -45,9 +60,11 @@ class DogRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         feeling_dogs = self.get_queryset()
+        print("feeling_dogs queryset ", feeling_dogs)
         next_dogs = feeling_dogs.filter(
             id__gt=self.kwargs.get('pk')
         )
+        print("next_dogs ", next_dogs)
         if next_dogs.exists():
             return next_dogs.first()
         if feeling_dogs.exists():
@@ -102,7 +119,4 @@ class UserPrefUpdateView(RetrieveUpdateAPIView):
         userpref = self.get_queryset().filter(
             user=self.request.user
         ).first()
-        return userpref 
-
-
-
+        return userpref
