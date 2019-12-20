@@ -4,12 +4,12 @@ from django.core.urlresolvers import reverse
 
 from rest_framework import permissions, status
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
-                                     UpdateAPIView)
+                                     UpdateAPIView, RetrieveUpdateAPIView)
 from rest_framework.response import Response
 
 from . import serializers
-from .models import Dog, UserDog
-from .serializers import DogSerializer, UserDogSerializer
+from .models import Dog, UserDog, UserPref
+from .serializers import DogSerializer, UserDogSerializer, UserPrefSerializer
 
 
 class UserRegisterView(CreateAPIView):
@@ -89,5 +89,25 @@ class UserDogStatusUpdateView(UpdateAPIView):
             return Response(serializer.data)
 
 
-class UserPrefUpdateView(UpdateAPIView):
-    pass
+class UserPrefUpdateView(RetrieveUpdateAPIView):
+    queryset = UserPref.objects.all()
+    serializer_class = UserPrefSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_object(self):
+        userpref = self.get_queryset().filter(
+            user=self.request.user
+        ).first()
+        return userpref 
+    
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = UserPrefSerializer(
+            instance=instance,
+            data=request.data
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+

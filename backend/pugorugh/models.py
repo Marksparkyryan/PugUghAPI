@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 
 class Dog(models.Model):
@@ -33,8 +35,8 @@ class Dog(models.Model):
     image_filename = models.CharField(max_length=256, unique=True)
     breed = models.CharField(default='unknown', max_length=48)
     age = models.IntegerField()
-    gender = models.CharField(max_length=1, choices=GENDER)
-    size = models.CharField(default="unknown", max_length=2, choices=SIZE)
+    gender = models.CharField(max_length=48, choices=GENDER)
+    size = models.CharField(default="unknown", max_length=48, choices=SIZE)
 
     def __str__(self):
         return self.name
@@ -75,25 +77,13 @@ class UserPref(models.Model):
         [(s)mall, (m)edium, (l)arge, (xl) extra large] representing
         preferred size of dog
     """
-    AGES = (
-        ('b', 'baby'),
-        ('y', 'young'),
-        ('a', 'adult'),
-        ('s', 'senior')
-    )
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    age = models.CharField(max_length=7, default='b,y,a,s')
+    gender = models.CharField(max_length=3, default='m,f')
+    size = models.CharField(max_length=8, default='s,m,l,xl')
 
-    GENDERS = (
-        ('m', 'male'),
-        ('f', 'female')
-    )
+    @receiver(post_save, sender=User)
+    def create_user_pref(sender, instance, created, **kwargs):
+        if created:
+            UserPref.objects.create(user=instance)
 
-    SIZES = (
-        ('s', 'small'),
-        ('m', 'medium'),
-        ('l', 'large'),
-        ('xl', 'extra large')
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    age = models.CharField(max_length=1, choices=AGES)
-    gender = models.CharField(max_length=1, choices=GENDERS)
-    size = models.CharField(max_length=2, choices=SIZES)
