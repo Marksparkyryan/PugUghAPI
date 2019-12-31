@@ -34,6 +34,8 @@ class DogSerializer(serializers.ModelSerializer):
             'age',
             'gender',
             'size',
+            'birthday',
+            'likes'
         ]
 
 

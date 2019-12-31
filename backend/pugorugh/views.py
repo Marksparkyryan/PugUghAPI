@@ -22,6 +22,8 @@ class UserRegisterView(CreateAPIView):
 
 
 class DogListCreateView(ListCreateAPIView):
+    """API endpoint handling the GET and POST requests for dogs
+    """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
     permission_classes = [permissions.IsAuthenticated]

@@ -1,5 +1,4 @@
-
-
+import datetime as dt
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, pre_save
@@ -36,16 +35,26 @@ class Dog(models.Model):
     name = models.CharField(max_length=48, unique=True)
     image_filename = models.CharField(max_length=256, unique=True)
     breed = models.CharField(default='unknown', max_length=48)
-    age_letter = models.CharField(max_length=1, null=True)
-    age = models.IntegerField()
+    age_letter = models.CharField(max_length=1, null=True, editable=False)
+    age = models.IntegerField(blank=True, null=True)
     gender = models.CharField(max_length=48, choices=GENDER)
     size = models.CharField(default="unknown", max_length=48, choices=SIZE)
+    birthday = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return self.name
+    
+    @property
+    def likes(self):
+        return UserDog.objects.filter(
+            dog=self,
+            status="l"
+        ).count()
 
     def save(self, *args, **kwargs):
-        "Returns letter category of Dog's age"
+        """Overriding derived class method to populate age_letter and 
+        birthday fields """
+        # derive age category from age in months
         if self.age > 84:
             self.age_letter = 's'
         elif self.age > 18:
@@ -54,8 +63,10 @@ class Dog(models.Model):
             self.age_letter = 'y'
         else:
             self.age_letter = 'b'
+        # derive birthday from age in months
+        if not self.birthday:
+            self.birthday = dt.date.today() - dt.timedelta(weeks=self.age * 4)
         super(Dog, self).save(*args, **kwargs)
-
 
 
 class UserDog(models.Model):
