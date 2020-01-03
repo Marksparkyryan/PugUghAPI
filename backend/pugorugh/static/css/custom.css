@@ -8,7 +8,29 @@ img {
   background: white;
   padding: 15px 20px;
   margin-top: -9px;
+  margin-bottom: 0;
+  color: black;
 }
+.dog-card-footer {
+  position: relative;
+  color: grey;
+  background-color: white;
+  display: block;
+  margin-bottom: 25px;
+}
+.dog-card-footer p {
+  display: inline-block;
+  padding: 10px 20px;
+  margin: 0;
+  font-size: 13px;
+  font-family: "Work Sans"
+}
+.dog-card-footer p:last-child {
+  position: absolute;
+  right: 0;
+}
+
+
 .text-centered {
   text-align: center;
 }

@@ -158,14 +158,31 @@ var Dog = React.createClass({
         "p",
         { className: "dog-card" },
         this.state.details.name,
-        "•",
+        " | ",
         this.state.details.breed,
-        "•",
+        " | ",
         this.state.details.age,
-        " Months•",
+        " Months ",
         this.genderLookup[this.state.details.gender],
-        "•",
-        this.sizeLookup[this.state.details.size]
+        " | ",
+        this.sizeLookup[this.state.details.size],
+      ),
+      React.createElement(
+        "div",
+        { className: "dog-card-footer" },
+        React.createElement(
+          "p",
+          { className: ""},
+          "Liked by ",
+          this.state.details.likes,
+          " users"
+        ),
+        React.createElement(
+          "p",
+          { className: ""},
+          "Joined on: ",
+          this.state.details.joined,
+        ),
       ),
       this.dogControls()
     );

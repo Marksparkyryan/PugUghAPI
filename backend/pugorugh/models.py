@@ -17,6 +17,8 @@ class Dog(models.Model):
         representing gender of dog
         size {string} -- character(s) [(s)mall, (m)edium, (l)arge, (xl)
         extra large, (u)nknown] representing size of dog
+        birthday {date object} -- date of birth
+        joined {date object} -- date of instance creation
     """
     GENDER = (
         ('m', 'male'),
@@ -40,16 +42,22 @@ class Dog(models.Model):
     gender = models.CharField(max_length=48, choices=GENDER)
     size = models.CharField(default="unknown", max_length=48, choices=SIZE)
     birthday = models.DateField(null=True, blank=True)
+    joined = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name
     
     @property
     def likes(self):
-        return UserDog.objects.filter(
+        """Return number of current likes of Dog instance"""
+        # return UserDog.objects.filter(
+        #     dog=self,
+        #     status="l"
+        # ).count()
+        return self.userdog_set.filter(
             dog=self,
             status="l"
-        ).count()
+        ).count()   
 
     def save(self, *args, **kwargs):
         """Overriding derived class method to populate age_letter and 
@@ -89,6 +97,13 @@ class UserDog(models.Model):
 
     class Meta:
         unique_together = ['user', 'dog']
+    
+    def __str__(self):
+        return "{} {} {}".format(
+            self.user.username, 
+            dict(self.FEELINGS)[self.status], 
+            self.dog.name
+        )
 
 
 class UserPref(models.Model):
@@ -108,6 +123,9 @@ class UserPref(models.Model):
     age = models.CharField(max_length=7, default='b,y,a,s')
     gender = models.CharField(max_length=3, default='m,f')
     size = models.CharField(max_length=8, default='s,m,l,xl')
+
+    def __str__(self):
+        return self.user.username + "'s" + " preferences"
 
     @receiver(post_save, sender=User)
     def create_user_pref(sender, instance, created, **kwargs):

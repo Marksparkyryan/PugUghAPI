@@ -124,7 +124,7 @@ var Dog = React.createClass({
           {this.state.details.breed}&bull;
           {this.state.details.age} Months&bull;
           {this.genderLookup[this.state.details.gender]}&bull;
-          {this.sizeLookup[this.state.details.size]}
+          {this.sizeLookup[this.state.details.size]};
         </p>
         {this.dogControls()}
       </div>

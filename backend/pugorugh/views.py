@@ -62,11 +62,9 @@ class DogRetrieveView(RetrieveAPIView):
 
     def get_object(self):
         feeling_dogs = self.get_queryset()
-        print("feeling_dogs queryset ", feeling_dogs)
         next_dogs = feeling_dogs.filter(
             id__gt=self.kwargs.get('pk')
         )
-        print("next_dogs ", next_dogs)
         if next_dogs.exists():
             return next_dogs.first()
         if feeling_dogs.exists():
