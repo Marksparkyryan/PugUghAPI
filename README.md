@@ -14,8 +14,9 @@ backend with models, endpoints, serailizers, and views that handled each unique 
 4. ```source .venv/bin/activate``` to activate the virtual environment
 5. ```pip install -r PugUghAPI/requirements.txt``` to install app requirements
 6. Run ```PugUghAPI/backend/pugorugh/scripts/data_import.py``` to populate the database with the provided json file
-7. ```python manage.py runserver``` to serve the app to your local host
-8. visit ```http://127.0.0.1:8000/``` to see the dogs! 
+7. From ```PugUghAPI/backend``` run ```python manage.py createsuperuser``` to make a user (login is required for this app) 
+8. ```python manage.py runserver``` to serve the app to your local host
+9. visit ```http://127.0.0.1:8000/``` to see the dogs! 
 
 
 <br/>
