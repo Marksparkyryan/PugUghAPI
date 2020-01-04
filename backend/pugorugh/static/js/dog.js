@@ -149,7 +149,11 @@ var Dog = React.createClass({
         )
       );
     }
-
+    if (this.state.details.likes === 1) {
+      users = " user"
+    } else {
+      users = " users"
+    }
     return React.createElement(
       "div",
       null,
@@ -175,7 +179,7 @@ var Dog = React.createClass({
           { className: ""},
           "Liked by ",
           this.state.details.likes,
-          " users"
+          users
         ),
         React.createElement(
           "p",
