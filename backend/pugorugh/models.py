@@ -1,7 +1,7 @@
 import datetime as dt
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
@@ -46,7 +46,7 @@ class Dog(models.Model):
 
     def __str__(self):
         return self.name
-    
+
     @property
     def likes(self):
         """Return number of current likes of Dog instance"""
@@ -57,10 +57,10 @@ class Dog(models.Model):
         return self.userdog_set.filter(
             dog=self,
             status="l"
-        ).count()   
+        ).count()
 
     def save(self, *args, **kwargs):
-        """Overriding derived class method to populate age_letter and 
+        """Overriding derived class method to populate age_letter and
         birthday fields """
         # derive age category from age in months
         if self.age > 84:
@@ -97,11 +97,11 @@ class UserDog(models.Model):
 
     class Meta:
         unique_together = ['user', 'dog']
-    
+
     def __str__(self):
         return "{} {} {}".format(
-            self.user.username, 
-            dict(self.FEELINGS)[self.status], 
+            self.user.username,
+            dict(self.FEELINGS)[self.status],
             self.dog.name
         )
 
@@ -119,7 +119,8 @@ class UserPref(models.Model):
         [(s)mall, (m)edium, (l)arge, (xl) extra large] representing
         preferred size of dog
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='prefs')
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name='prefs')
     age = models.CharField(max_length=7, default='b,y,a,s')
     gender = models.CharField(max_length=3, default='m,f')
     size = models.CharField(max_length=8, default='s,m,l,xl')
@@ -129,6 +130,9 @@ class UserPref(models.Model):
 
     @receiver(post_save, sender=User)
     def create_user_pref(sender, instance, created, **kwargs):
+        """Listens for the creation of a user instance. If a user has
+        been created, a UserPref instance linked to that user is created
+        automatically.
+        """
         if created:
             UserPref.objects.create(user=instance)
-

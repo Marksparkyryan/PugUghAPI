@@ -1,14 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import Http404, get_object_or_404
-from django.core.urlresolvers import reverse
+from django.shortcuts import Http404
 
-from rest_framework import permissions, status
+from rest_framework import permissions
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView, RetrieveUpdateAPIView,
                                      ListCreateAPIView, DestroyAPIView)
-from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
 
 from . import serializers
 from .models import Dog, UserDog, UserPref
@@ -16,6 +13,8 @@ from .serializers import DogSerializer, UserDogSerializer, UserPrefSerializer
 
 
 class UserRegisterView(CreateAPIView):
+    """API endpoint handling the registration of new users
+    """
     permission_classes = (permissions.AllowAny,)
     model = get_user_model()
     serializer_class = serializers.UserSerializer
@@ -30,6 +29,8 @@ class DogListCreateView(ListCreateAPIView):
 
 
 class DogDeleteView(DestroyAPIView):
+    """API endpoint handling the deletion of single Dog instances
+    """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -44,6 +45,9 @@ class DogRetrieveView(RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
+        """Takes in kwargs from uri (l, d, or u) and filters/returns Dog
+        queryset
+        """
         feeling = self.kwargs.get('feeling')[0]
         if feeling in ('l', 'd'):
             feeling_dogs = self.queryset.filter(
@@ -74,7 +78,10 @@ class DogRetrieveView(RetrieveAPIView):
 
 class UserDogStatusUpdateView(UpdateAPIView):
     """API endpoint handling GET requests for dogs liked, disliked, or
-    undecided by user
+    undecided by user. Note, relationships that are undecided are not
+    created and stored on the UserDog table. We can assume all dogs that
+    are not liked or disliked are undecided. We can exclude dogs that
+    exist in the UserDog table to get a queryset of all undecided dogs.
     """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
@@ -111,6 +118,8 @@ class UserDogStatusUpdateView(UpdateAPIView):
 
 
 class UserPrefUpdateView(RetrieveUpdateAPIView):
+    """API endpoint handling the update of User's preference of Dog
+    """
     queryset = UserPref.objects.all()
     serializer_class = UserPrefSerializer
     permission_classes = [permissions.IsAuthenticated]

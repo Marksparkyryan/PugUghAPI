@@ -6,6 +6,9 @@ from .models import Dog, UserPref, UserDog
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Serializer that encodes and decodes python objects/fields into 
+    json format
+    """
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
