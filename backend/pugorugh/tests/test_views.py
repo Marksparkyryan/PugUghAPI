@@ -18,6 +18,10 @@ class APIViewTestCases(TestCase):
         user.set_password('password123')
         user.save()
 
+        Token.objects.create(
+            user=user
+        )
+
         Dog.objects.create(
             name="Dog1",
             image_filename="dog1.jpg",
@@ -53,10 +57,10 @@ class APIViewTestCases(TestCase):
             status="d"
         )
 
-    user = User.objects.get(username='sparky')
-    token = Token.objects.get(user=user)
-    apiclient = APIClient()
-    apiclient.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+        self.user = User.objects.get(id=1)
+        token = Token.objects.get(user=user)
+        self.apiclient = APIClient()
+        self.apiclient.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
     def test_user_register_view(self):
         # clear token from header before registering new user
