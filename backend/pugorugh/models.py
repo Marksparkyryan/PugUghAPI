@@ -71,7 +71,7 @@ class Dog(models.Model):
             self.age_letter = 'y'
         else:
             self.age_letter = 'b'
-        # derive birthday from age in months
+        # derive approximate birthday from age in months
         if not self.birthday:
             self.birthday = dt.date.today() - dt.timedelta(weeks=self.age * 4)
         super(Dog, self).save(*args, **kwargs)
