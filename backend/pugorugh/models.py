@@ -38,7 +38,7 @@ class Dog(models.Model):
     image_filename = models.CharField(max_length=256, unique=True)
     breed = models.CharField(default='unknown', max_length=48)
     age_letter = models.CharField(max_length=1, null=True, editable=False)
-    age = models.IntegerField(blank=True, null=True)
+    age = models.IntegerField()
     gender = models.CharField(max_length=48, choices=GENDER)
     size = models.CharField(default="unknown", max_length=48, choices=SIZE)
     birthday = models.DateField(null=True, blank=True)
