@@ -31,7 +31,6 @@ class Dog(models.Model):
         ('m', 'medium'),
         ('l', 'large'),
         ('xl', 'extra large'),
-        ('u', 'unknown')
     )
 
     name = models.CharField(max_length=48, unique=True)
@@ -40,7 +39,7 @@ class Dog(models.Model):
     age_letter = models.CharField(max_length=1, null=True, editable=False)
     age = models.IntegerField()
     gender = models.CharField(max_length=48, choices=GENDER)
-    size = models.CharField(default="unknown", max_length=48, choices=SIZE)
+    size = models.CharField(max_length=48, choices=SIZE)
     birthday = models.DateField(null=True, blank=True)
     joined = models.DateField(auto_now_add=True)
 
