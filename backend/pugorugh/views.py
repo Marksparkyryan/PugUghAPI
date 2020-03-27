@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import Http404
 
-from rest_framework import permissions
+from rest_framework import permissions, authentication
 from rest_framework.generics import (CreateAPIView, RetrieveAPIView,
                                      UpdateAPIView, RetrieveUpdateAPIView,
                                      ListCreateAPIView, DestroyAPIView)
@@ -77,44 +77,28 @@ class DogRetrieveView(RetrieveAPIView):
 
 
 class UserDogStatusUpdateView(UpdateAPIView):
-    """API endpoint handling GET requests for dogs liked, disliked, or
-    undecided by user. Note, relationships that are undecided are not
-    created and stored on the UserDog table. We can assume all dogs that
-    are not liked or disliked are undecided. We can exclude dogs that
-    exist in the UserDog table to get a queryset of all undecided dogs.
+    """API endpoint for updating UserDog relationship as liked,
+    disliked, or undecided.
     """
     queryset = Dog.objects.all()
     serializer_class = DogSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-    def update(self, request, *args, **kwargs):
+    authentication_classes = (authentication.TokenAuthentication,)
+    
+    def put(self, request, *args, **kwargs):
         feeling = self.kwargs.get('feeling')[0]
-        if feeling in ('l', 'd'):
-            existing, created = UserDog.objects.get_or_create(
-                user=self.request.user,
-                dog=self.get_object(),
-            )
-            instance = existing or created
-            serializer = UserDogSerializer(
-                instance=instance,
-                data={
-                    'user': self.request.user.id,
-                    'dog': self.get_object().id,
-                    'status': feeling
-                })
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data)
-        elif feeling == 'u':
-            relationship = UserDog.objects.filter(
-                user=self.request.user.id,
-                dog=self.get_object().id
-            )
-            if relationship.exists():
-                relationship.delete()
-            dog = self.get_object()
-            serializer = DogSerializer(instance=dog)
-            return Response(serializer.data)
+        existing, created = UserDog.objects.get_or_create(
+            user=self.request.user,
+            dog=self.get_object()
+        )
+        instance = existing or created
+        instance.status = feeling
+        instance.save()
+        return self.update(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        serializer = DogSerializer(instance=self.get_object())
+        return Response(serializer.data)
 
 
 class UserPrefUpdateView(RetrieveUpdateAPIView):
